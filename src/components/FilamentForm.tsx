@@ -20,6 +20,7 @@ export function FilamentForm({ isOpen, onClose, onSubmit, filament }: FilamentFo
     marca: '',
     material: '',
     cor: '',
+    corRgb: '#808080',
     quantidade: 0
   });
 
@@ -29,6 +30,7 @@ export function FilamentForm({ isOpen, onClose, onSubmit, filament }: FilamentFo
         marca: filament.marca,
         material: filament.material,
         cor: filament.cor,
+        corRgb: filament.corRgb,
         quantidade: filament.quantidade
       });
     } else {
@@ -36,6 +38,7 @@ export function FilamentForm({ isOpen, onClose, onSubmit, filament }: FilamentFo
         marca: '',
         material: '',
         cor: '',
+        corRgb: '#808080',
         quantidade: 0
       });
     }
@@ -44,7 +47,7 @@ export function FilamentForm({ isOpen, onClose, onSubmit, filament }: FilamentFo
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.marca || !formData.material || !formData.cor) {
+    if (!formData.marca || !formData.material || !formData.cor || !formData.corRgb) {
       toast({
         title: "Campos obrigatórios",
         description: "Preencha todos os campos para continuar.",
@@ -133,13 +136,32 @@ export function FilamentForm({ isOpen, onClose, onSubmit, filament }: FilamentFo
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="cor">Cor</Label>
+            <Label htmlFor="cor">Nome da Cor</Label>
             <Input
               id="cor"
               value={formData.cor}
               onChange={(e) => handleChange('cor', e.target.value)}
               placeholder="Ex: Preto, Branco, Azul..."
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="corRgb">Cor RGB</Label>
+            <div className="flex items-center gap-3">
+              <input
+                id="corRgb"
+                type="color"
+                value={formData.corRgb}
+                onChange={(e) => handleChange('corRgb', e.target.value)}
+                className="w-12 h-10 border border-input rounded-md cursor-pointer bg-background"
+              />
+              <Input
+                value={formData.corRgb}
+                onChange={(e) => handleChange('corRgb', e.target.value)}
+                placeholder="#000000"
+                className="flex-1"
+              />
+            </div>
           </div>
 
           <div className="space-y-2">

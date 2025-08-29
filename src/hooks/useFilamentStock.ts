@@ -4,16 +4,16 @@ import { Filament, FilamentFormData } from '@/types/filament';
 const STORAGE_KEY = 'filament-stock';
 
 const initialData: Filament[] = [
-  { id: '1', marca: 'eSUN', material: 'PLA', cor: 'Preto', quantidade: 3 },
-  { id: '2', marca: 'Prusa Research', material: 'PETG', cor: 'Vermelho', quantidade: 1 },
-  { id: '3', marca: 'Creality', material: 'ABS', cor: 'Branco', quantidade: 2 },
-  { id: '4', marca: 'Overture', material: 'TPU', cor: 'Azul', quantidade: 0 },
-  { id: '5', marca: 'Hatchbox', material: 'PLA', cor: 'Verde', quantidade: 4 },
-  { id: '6', marca: 'Anycubic', material: 'Nylon', cor: 'Cinza', quantidade: 1 },
-  { id: '7', marca: 'Polymaker', material: 'PLA', cor: 'Amarelo', quantidade: 2 },
-  { id: '8', marca: 'Sunlu', material: 'PETG', cor: 'Laranja', quantidade: 0 },
-  { id: '9', marca: 'Geeetech', material: 'ABS', cor: 'Azul Claro', quantidade: 1 },
-  { id: '10', marca: 'Bambu Lab', material: 'PLA', cor: 'Rosa', quantidade: 5 },
+  { id: '1', marca: 'eSUN', material: 'PLA', cor: 'Preto', corRgb: '#000000', quantidade: 3 },
+  { id: '2', marca: 'Prusa Research', material: 'PETG', cor: 'Vermelho', corRgb: '#dc2626', quantidade: 1 },
+  { id: '3', marca: 'Creality', material: 'ABS', cor: 'Branco', corRgb: '#ffffff', quantidade: 2 },
+  { id: '4', marca: 'Overture', material: 'TPU', cor: 'Azul', corRgb: '#2563eb', quantidade: 0 },
+  { id: '5', marca: 'Hatchbox', material: 'PLA', cor: 'Verde', corRgb: '#16a34a', quantidade: 4 },
+  { id: '6', marca: 'Anycubic', material: 'Nylon', cor: 'Cinza', corRgb: '#6b7280', quantidade: 1 },
+  { id: '7', marca: 'Polymaker', material: 'PLA', cor: 'Amarelo', corRgb: '#eab308', quantidade: 2 },
+  { id: '8', marca: 'Sunlu', material: 'PETG', cor: 'Laranja', corRgb: '#ea580c', quantidade: 0 },
+  { id: '9', marca: 'Geeetech', material: 'ABS', cor: 'Azul Claro', corRgb: '#0ea5e9', quantidade: 1 },
+  { id: '10', marca: 'Bambu Lab', material: 'PLA', cor: 'Rosa', corRgb: '#ec4899', quantidade: 5 },
 ];
 
 export function useFilamentStock() {
@@ -69,7 +69,7 @@ export function useFilamentStock() {
     const csvContent = [
       headers.join(','),
       ...filaments.map(f => 
-        `${f.marca},${f.material},${f.cor},${f.quantidade}`
+        `${f.marca},${f.material},"${f.cor}",${f.quantidade}`
       )
     ].join('\n');
     
@@ -95,7 +95,8 @@ export function useFilamentStock() {
             id: `imported-${Date.now()}-${index}`,
             marca: marca?.trim() || '',
             material: material?.trim() || '',
-            cor: cor?.trim() || '',
+            cor: cor?.trim().replace(/"/g, '') || '',
+            corRgb: '#808080', // Cor padrão para imports
             quantidade: parseInt(quantidade?.trim() || '0')
           };
         })

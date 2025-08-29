@@ -3,6 +3,7 @@ export interface Filament {
   marca: string;
   material: string;
   cor: string;
+  corRgb: string;
   quantidade: number;
 }
 
@@ -10,6 +11,7 @@ export interface FilamentFormData {
   marca: string;
   material: string;
   cor: string;
+  corRgb: string;
   quantidade: number;
 }
 

@@ -69,7 +69,16 @@ export function FilamentCard({ filament, onUpdateQuantity, onEdit, onDelete }: F
       <CardContent className="space-y-4">
         <div>
           <p className="text-sm text-muted-foreground">Cor</p>
-          <p className="font-medium">{filament.cor}</p>
+          <div className="flex items-center gap-2 mt-1">
+            <div 
+              className="w-6 h-6 rounded-full border-2 border-border shadow-sm"
+              style={{ backgroundColor: filament.corRgb }}
+            />
+            <div>
+              <p className="font-medium">{filament.cor}</p>
+              <p className="text-xs text-muted-foreground font-mono">{filament.corRgb}</p>
+            </div>
+          </div>
         </div>
         
         <div className="flex items-center justify-between">
