@@ -1,0 +1,45 @@
+# Dependências
+node_modules
+npm-debug.log
+
+# Arquivos de ambiente
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos de desenvolvimento
+.git
+.gitignore
+.dockerignore
+Dockerfile*
+docker-compose*
+README.md
+LICENSE
+
+# Arquivos de build e cache
+dist
+build
+.cache
+.next
+.nuxt
+.vuepress/dist
+.docz
+.gatsby
+
+# Arquivos de teste
+coverage
+.nyc_output
+
+# Arquivos de IDE e editores
+.idea
+.vscode
+*.swp
+*.swo
+*.swn
+*.bak

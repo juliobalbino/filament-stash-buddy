@@ -1,75 +1,113 @@
 import { useState, useEffect } from 'react';
 import { Filament, FilamentFormData } from '@/types/filament';
-
-const STORAGE_KEY = 'filament-stock';
-
-const initialData: Filament[] = [
-  { id: '1', marca: 'eSUN', material: 'PLA', cor: 'Preto', corRgb: '#000000', quantidade: 3 },
-  { id: '2', marca: 'Prusa Research', material: 'PETG', cor: 'Vermelho', corRgb: '#dc2626', quantidade: 1 },
-  { id: '3', marca: 'Creality', material: 'ABS', cor: 'Branco', corRgb: '#ffffff', quantidade: 2 },
-  { id: '4', marca: 'Overture', material: 'TPU', cor: 'Azul', corRgb: '#2563eb', quantidade: 0 },
-  { id: '5', marca: 'Hatchbox', material: 'PLA', cor: 'Verde', corRgb: '#16a34a', quantidade: 4 },
-  { id: '6', marca: 'Anycubic', material: 'Nylon', cor: 'Cinza', corRgb: '#6b7280', quantidade: 1 },
-  { id: '7', marca: 'Polymaker', material: 'PLA', cor: 'Amarelo', corRgb: '#eab308', quantidade: 2 },
-  { id: '8', marca: 'Sunlu', material: 'PETG', cor: 'Laranja', corRgb: '#ea580c', quantidade: 0 },
-  { id: '9', marca: 'Geeetech', material: 'ABS', cor: 'Azul Claro', corRgb: '#0ea5e9', quantidade: 1 },
-  { id: '10', marca: 'Bambu Lab', material: 'PLA', cor: 'Rosa', corRgb: '#ec4899', quantidade: 5 },
-];
+import { FilamentService } from '@/services/filament.service';
+import { useToast } from '@/hooks/use-toast';
 
 export function useFilamentStock() {
   const [filaments, setFilaments] = useState<Filament[]>([]);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      setFilaments(JSON.parse(stored));
-    } else {
-      setFilaments(initialData);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(initialData));
-    }
-    setLoading(false);
+    loadFilaments();
   }, []);
 
-  const saveToStorage = (newFilaments: Filament[]) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newFilaments));
-    setFilaments(newFilaments);
+  const loadFilaments = async () => {
+    try {
+      const data = await FilamentService.getAll();
+      setFilaments(data);
+    } catch (error) {
+      toast({
+        title: "Erro ao carregar filamentos",
+        description: "Não foi possível carregar a lista de filamentos.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const addFilament = (formData: FilamentFormData) => {
-    const newFilament: Filament = {
-      id: Date.now().toString(),
-      ...formData
-    };
-    const updated = [...filaments, newFilament];
-    saveToStorage(updated);
+  const addFilament = async (formData: FilamentFormData) => {
+    try {
+      const newFilament = await FilamentService.create(formData);
+      setFilaments(prev => [...prev, newFilament]);
+      toast({
+        title: "Filamento adicionado",
+        description: `${formData.marca} ${formData.material} ${formData.cor} foi adicionado com sucesso.`
+      });
+    } catch (error) {
+      toast({
+        title: "Erro ao adicionar filamento",
+        description: "Não foi possível adicionar o filamento.",
+        variant: "destructive"
+      });
+    }
   };
 
-  const updateFilament = (id: string, formData: FilamentFormData) => {
-    const updated = filaments.map(f => 
-      f.id === id ? { ...f, ...formData } : f
-    );
-    saveToStorage(updated);
+  const updateFilament = async (id: string, formData: FilamentFormData) => {
+    try {
+      const updated = await FilamentService.update(id, formData);
+      setFilaments(prev => prev.map(f => f.id === id ? updated : f));
+      toast({
+        title: "Filamento atualizado",
+        description: `${formData.marca} ${formData.material} ${formData.cor} foi atualizado com sucesso.`
+      });
+      return updated;
+    } catch (error) {
+      toast({
+        title: "Erro ao atualizar filamento",
+        description: error instanceof Error ? error.message : "Não foi possível atualizar o filamento.",
+        variant: "destructive"
+      });
+      throw error;
+    }
   };
 
-  const deleteFilament = (id: string) => {
-    const updated = filaments.filter(f => f.id !== id);
-    saveToStorage(updated);
+  const deleteFilament = async (id: string) => {
+    try {
+      await FilamentService.delete(id);
+      setFilaments(prev => prev.filter(f => f.id !== id));
+      toast({
+        title: "Filamento excluído",
+        description: "O filamento foi excluído com sucesso."
+      });
+    } catch (error) {
+      toast({
+        title: "Erro ao excluir filamento",
+        description: "Não foi possível excluir o filamento.",
+        variant: "destructive"
+      });
+    }
   };
 
-  const updateQuantity = (id: string, quantidade: number) => {
-    const updated = filaments.map(f => 
-      f.id === id ? { ...f, quantidade: Math.max(0, quantidade) } : f
-    );
-    saveToStorage(updated);
+  const updateQuantity = async (id: string, quantidade: number) => {
+    try {
+      if (quantidade < 0) {
+        throw new Error('A quantidade não pode ser negativa');
+      }
+      const updated = await FilamentService.updateQuantity(id, quantidade);
+      setFilaments(prev => prev.map(f => f.id === id ? updated : f));
+      toast({
+        title: "Quantidade atualizada",
+        description: "A quantidade do filamento foi atualizada com sucesso."
+      });
+      return updated;
+    } catch (error) {
+      toast({
+        title: "Erro ao atualizar quantidade",
+        description: error instanceof Error ? error.message : "Não foi possível atualizar a quantidade do filamento.",
+        variant: "destructive"
+      });
+      throw error;
+    }
   };
 
   const exportToCSV = () => {
-    const headers = ['Marca', 'Material', 'Cor', 'Quantidade (Rolos)'];
+    const headers = ['Marca', 'Material', 'Cor', 'Quantidade (Rolos)', 'Peso Carretel (g)', 'Peso Filamento (g)', 'Peso Total do Rolo (g)'];
     const csvContent = [
       headers.join(','),
       ...filaments.map(f => 
-        `${f.marca},${f.material},"${f.cor}",${f.quantidade}`
+        `${f.marca},${f.material},"${f.cor}",${f.quantidade},${f.pesoCarretel || ''},${f.pesoFilamento || ''},${f.pesoRolo || ''}`
       )
     ].join('\n');
     
@@ -82,36 +120,46 @@ export function useFilamentStock() {
     window.URL.revokeObjectURL(url);
   };
 
-  const importFromCSV = (file: File) => {
+  const importFromCSV = async (file: File) => {
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const text = e.target?.result as string;
       const lines = text.split('\n').slice(1); // Skip header
-      const imported = lines
-        .filter(line => line.trim())
-        .map((line, index) => {
-          const [marca, material, cor, quantidade] = line.split(',');
-          return {
-            id: `imported-${Date.now()}-${index}`,
+      
+      try {
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          
+          const [marca, material, cor, quantidade, pesoCarretel, pesoFilamento, pesoRolo] = line.split(',');
+          const formData: FilamentFormData = {
             marca: marca?.trim() || '',
             material: material?.trim() || '',
             cor: cor?.trim().replace(/"/g, '') || '',
             corRgb: '#808080', // Cor padrão para imports
-            quantidade: parseInt(quantidade?.trim() || '0')
+            quantidade: parseInt(quantidade?.trim() || '0'),
+            pesoCarretel: pesoCarretel ? parseInt(pesoCarretel.trim()) : undefined,
+            pesoFilamento: pesoFilamento ? parseInt(pesoFilamento.trim()) : undefined,
+            pesoRolo: pesoRolo ? parseInt(pesoRolo.trim()) : undefined
           };
-        })
-        .filter(f => f.marca && f.material && f.cor);
-      
-      saveToStorage(imported);
+          
+          if (formData.marca && formData.material && formData.cor) {
+            await addFilament(formData);
+          }
+        }
+        
+        toast({
+          title: "Importação concluída",
+          description: "Os filamentos foram importados com sucesso."
+        });
+      } catch (error) {
+        toast({
+          title: "Erro na importação",
+          description: "Ocorreu um erro ao importar os filamentos.",
+          variant: "destructive"
+        });
+      }
     };
     reader.readAsText(file);
-  };
-
-  const stats = {
-    total: filaments.length,
-    lowStock: filaments.filter(f => f.quantidade <= 1).length,
-    outOfStock: filaments.filter(f => f.quantidade === 0).length,
-    totalRolls: filaments.reduce((sum, f) => sum + f.quantidade, 0)
   };
 
   return {
@@ -123,6 +171,11 @@ export function useFilamentStock() {
     updateQuantity,
     exportToCSV,
     importFromCSV,
-    stats
+    stats: {
+      total: filaments.length,
+      lowStock: filaments.filter(f => f.quantidade <= 1).length,
+      outOfStock: filaments.filter(f => f.quantidade === 0).length,
+      totalRolls: filaments.reduce((sum, f) => sum + f.quantidade, 0)
+    }
   };
 }

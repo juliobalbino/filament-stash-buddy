@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Filament, FilamentFormData, MATERIAL_TYPES, COMMON_BRANDS } from '@/types/filament';
+import { Filament, FilamentFormData, MATERIAL_TYPES, COMMON_BRANDS, CARRETEL_WEIGHTS } from '@/types/filament';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,7 +21,10 @@ export function FilamentForm({ isOpen, onClose, onSubmit, filament }: FilamentFo
     material: '',
     cor: '',
     corRgb: '#808080',
-    quantidade: 0
+    quantidade: 0,
+    pesoCarretel: undefined,
+    pesoFilamento: undefined,
+    pesoRolo: undefined
   });
 
   useEffect(() => {
@@ -31,7 +34,10 @@ export function FilamentForm({ isOpen, onClose, onSubmit, filament }: FilamentFo
         material: filament.material,
         cor: filament.cor,
         corRgb: filament.corRgb,
-        quantidade: filament.quantidade
+        quantidade: filament.quantidade,
+        pesoCarretel: filament.pesoCarretel,
+        pesoFilamento: filament.pesoFilamento,
+        pesoRolo: filament.pesoRolo
       });
     } else {
       setFormData({
@@ -39,12 +45,15 @@ export function FilamentForm({ isOpen, onClose, onSubmit, filament }: FilamentFo
         material: '',
         cor: '',
         corRgb: '#808080',
-        quantidade: 0
+        quantidade: 0,
+        pesoCarretel: undefined,
+        pesoFilamento: undefined,
+        pesoRolo: undefined
       });
     }
   }, [filament, isOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.marca || !formData.material || !formData.cor || !formData.corRgb) {
@@ -65,33 +74,42 @@ export function FilamentForm({ isOpen, onClose, onSubmit, filament }: FilamentFo
       return;
     }
 
-    onSubmit(formData);
-    onClose();
-    
-    toast({
-      title: filament ? "Filamento atualizado" : "Filamento adicionado",
-      description: `${formData.marca} ${formData.material} ${formData.cor} foi ${filament ? 'atualizado' : 'adicionado'} com sucesso.`,
-      variant: "default"
-    });
+    try {
+      await onSubmit(formData);
+      onClose();
+    } catch (error) {
+      // Erro já tratado no hook useFilamentStock
+      return;
+    }
   };
 
   const handleChange = (field: keyof FilamentFormData, value: string | number) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    if (field === 'marca' && typeof value === 'string') {
+      // Preencher automaticamente o peso do carretel com base na marca selecionada
+      const pesoCarretel = CARRETEL_WEIGHTS[value];
+      
+      setFormData(prev => ({
+        ...prev,
+        [field]: value,
+        pesoCarretel: pesoCarretel || prev.pesoCarretel
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [field]: value
+      }));
+    }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>
             {filament ? 'Editar Filamento' : 'Adicionar Filamento'}
           </DialogTitle>
         </DialogHeader>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 overflow-y-auto max-h-[70vh] px-2 [&::-webkit-scrollbar]:hidden">
           <div className="space-y-2">
             <Label htmlFor="marca">Marca</Label>
             <Select
@@ -172,6 +190,42 @@ export function FilamentForm({ isOpen, onClose, onSubmit, filament }: FilamentFo
               min="0"
               value={formData.quantidade}
               onChange={(e) => handleChange('quantidade', parseInt(e.target.value) || 0)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="pesoCarretel">Peso do Carretel (g)</Label>
+            <Input
+              id="pesoCarretel"
+              type="number"
+              min="0"
+              value={formData.pesoCarretel || ''}
+              onChange={(e) => handleChange('pesoCarretel', parseInt(e.target.value) || undefined)}
+              placeholder="Ex: 200"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="pesoFilamento">Peso do Filamento (g)</Label>
+            <Input
+              id="pesoFilamento"
+              type="number"
+              min="0"
+              value={formData.pesoFilamento || ''}
+              onChange={(e) => handleChange('pesoFilamento', parseInt(e.target.value) || undefined)}
+              placeholder="Ex: 1000"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="pesoRolo">Peso Total do Rolo (g)</Label>
+            <Input
+              id="pesoRolo"
+              type="number"
+              min="0"
+              value={formData.pesoRolo || ''}
+              onChange={(e) => handleChange('pesoRolo', parseInt(e.target.value) || undefined)}
+              placeholder="Ex: 1200"
             />
           </div>
 

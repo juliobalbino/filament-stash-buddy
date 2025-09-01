@@ -1,0 +1,259 @@
+{
+  "info": {
+    "_postman_id": "e5a7b8c9-d0e1-4f23-a456-789b0c1d2e3f",
+    "name": "Filament Stash Buddy API",
+    "description": "Coleção para testar a API do Filament Stash Buddy",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Status",
+      "item": [
+        {
+          "name": "Verificar Status da API",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""],
+              "query": []
+            },
+            "description": "Verifica se a API está funcionando corretamente"
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints para verificar o status da API"
+    },
+    {
+      "name": "Filamentos",
+      "item": [
+        {
+          "name": "Listar Todos os Filamentos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/filaments",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "filaments"],
+              "query": []
+            },
+            "description": "Retorna todos os filamentos cadastrados"
+          },
+          "response": []
+        },
+        {
+          "name": "Filtrar Filamentos por Material",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/filaments?material=PLA",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "filaments"],
+              "query": [
+                {
+                  "key": "material",
+                  "value": "PLA"
+                }
+              ]
+            },
+            "description": "Filtra filamentos por material"
+          },
+          "response": []
+        },
+        {
+          "name": "Filtrar Filamentos por Marca",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/filaments?brand=Creality",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "filaments"],
+              "query": [
+                {
+                  "key": "brand",
+                  "value": "Creality"
+                }
+              ]
+            },
+            "description": "Filtra filamentos por marca"
+          },
+          "response": []
+        },
+        {
+          "name": "Filtrar Filamentos por Estoque Baixo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/filaments?lowStock=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "filaments"],
+              "query": [
+                {
+                  "key": "lowStock",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Filtra filamentos com estoque baixo"
+          },
+          "response": []
+        },
+        {
+          "name": "Obter Filamento por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/filaments/{{filamentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "filaments", "{{filamentId}}"],
+              "query": []
+            },
+            "description": "Retorna um filamento específico pelo ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Criar Novo Filamento",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"brand\": \"Creality\",\n  \"material\": \"PLA\",\n  \"color\": \"Vermelho\",\n  \"quantity\": 750,\n  \"initialWeight\": 1000,\n  \"spoolWeight\": 250,\n  \"diameter\": 1.75,\n  \"lowStockThreshold\": 200,\n  \"notes\": \"Filamento para peças decorativas\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/filaments",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "filaments"],
+              "query": []
+            },
+            "description": "Cria um novo filamento"
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar Filamento",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"brand\": \"Creality\",\n  \"material\": \"PLA\",\n  \"color\": \"Azul\",\n  \"quantity\": 600,\n  \"initialWeight\": 1000,\n  \"spoolWeight\": 250,\n  \"diameter\": 1.75,\n  \"lowStockThreshold\": 150,\n  \"notes\": \"Filamento atualizado para peças funcionais\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/filaments/{{filamentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "filaments", "{{filamentId}}"],
+              "query": []
+            },
+            "description": "Atualiza um filamento existente"
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar Quantidade de Filamento",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 500\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/filaments/{{filamentId}}/quantity",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "filaments", "{{filamentId}}", "quantity"],
+              "query": []
+            },
+            "description": "Atualiza apenas a quantidade de um filamento"
+          },
+          "response": []
+        },
+        {
+          "name": "Excluir Filamento",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/filaments/{{filamentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "filaments", "{{filamentId}}"],
+              "query": []
+            },
+            "description": "Remove um filamento do estoque"
+          },
+          "response": []
+        },
+        {
+          "name": "Obter Estatísticas de Filamentos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/filaments/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "filaments", "stats"],
+              "query": []
+            },
+            "description": "Retorna estatísticas sobre o estoque de filamentos"
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints para gerenciar filamentos"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string",
+      "description": "URL base da API"
+    },
+    {
+      "key": "filamentId",
+      "value": "inserir_id_aqui",
+      "type": "string",
+      "description": "ID de um filamento existente"
+    }
+  ]
+}

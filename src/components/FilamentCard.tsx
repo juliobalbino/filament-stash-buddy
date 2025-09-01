@@ -69,7 +69,7 @@ export function FilamentCard({ filament, onUpdateQuantity, onEdit, onDelete }: F
       <CardContent className="space-y-4">
         <div>
           <p className="text-sm text-muted-foreground">Cor</p>
-          <div className="flex items-center gap-2 mt-1">
+          <div className="flex items-center gap-2 mt-1 max-h-16">
             <div 
               className="w-6 h-6 rounded-full border-2 border-border shadow-sm"
               style={{ backgroundColor: filament.corRgb }}
@@ -92,7 +92,13 @@ export function FilamentCard({ filament, onUpdateQuantity, onEdit, onDelete }: F
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onUpdateQuantity(filament.id, filament.quantidade - 1)}
+              onClick={async () => {
+                try {
+                  await onUpdateQuantity(filament.id, filament.quantidade - 1);
+                } catch (error) {
+                  // Erro já tratado no hook useFilamentStock
+                }
+              }}
               disabled={filament.quantidade <= 0}
               className="h-8 w-8 p-0"
             >
@@ -101,12 +107,40 @@ export function FilamentCard({ filament, onUpdateQuantity, onEdit, onDelete }: F
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onUpdateQuantity(filament.id, filament.quantidade + 1)}
+              onClick={async () => {
+                try {
+                  await onUpdateQuantity(filament.id, filament.quantidade + 1);
+                } catch (error) {
+                  // Erro já tratado no hook useFilamentStock
+                }
+              }}
               className="h-8 w-8 p-0"
             >
               <Plus className="h-3 w-3" />
             </Button>
           </div>
+        </div>
+
+        {/* Pesos */}
+        <div className="grid grid-cols-3 gap-2 text-center">
+          {filament.pesoCarretel && (
+            <div>
+              <p className="text-xs text-muted-foreground">Carretel</p>
+              <p className="font-medium">{filament.pesoCarretel}g</p>
+            </div>
+          )}
+          {filament.pesoFilamento && (
+            <div>
+              <p className="text-xs text-muted-foreground">Filamento</p>
+              <p className="font-medium">{filament.pesoFilamento}g</p>
+            </div>
+          )}
+          {filament.pesoRolo && (
+            <div>
+              <p className="text-xs text-muted-foreground">Total do Rolo</p>
+              <p className="font-medium">{filament.pesoRolo}g</p>
+            </div>
+          )}
         </div>
         
         <Badge variant={stockStatus.variant} className="w-full justify-center">

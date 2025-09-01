@@ -1,0 +1,490 @@
+openapi: 3.0.0
+info:
+  title: Filament Stash Buddy API
+  description: API para gerenciamento de estoque de filamentos para impressão 3D
+  version: 1.0.0
+  contact:
+    name: Suporte Filament Stash Buddy
+    email: suporte@filamentstashbuddy.com
+
+servers:
+  - url: http://localhost:5000/api
+    description: Servidor de desenvolvimento local
+  - url: https://api.filamentstashbuddy.com/api
+    description: Servidor de produção
+
+tags:
+  - name: Filamentos
+    description: Operações relacionadas a filamentos
+  - name: Status
+    description: Verificação de status da API
+
+paths:
+  /filaments:
+    get:
+      summary: Listar todos os filamentos
+      description: Retorna uma lista de todos os filamentos cadastrados com opções de filtro
+      tags: [Filamentos]
+      parameters:
+        - in: query
+          name: material
+          schema:
+            type: string
+          description: Filtrar por material (PLA, ABS, PETG, etc)
+        - in: query
+          name: brand
+          schema:
+            type: string
+          description: Filtrar por marca
+        - in: query
+          name: color
+          schema:
+            type: string
+          description: Filtrar por cor
+        - in: query
+          name: lowStock
+          schema:
+            type: boolean
+          description: Filtrar por estoque baixo (true/false)
+      responses:
+        '200':
+          description: Lista de filamentos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Filament'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    post:
+      summary: Criar novo filamento
+      description: Adiciona um novo filamento ao estoque
+      tags: [Filamentos]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FilamentInput'
+      responses:
+        '201':
+          description: Filamento criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Filament'
+        '400':
+          description: Dados inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /filaments/{id}:
+    get:
+      summary: Obter filamento por ID
+      description: Retorna os detalhes de um filamento específico
+      tags: [Filamentos]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID do filamento
+      responses:
+        '200':
+          description: Detalhes do filamento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Filament'
+        '404':
+          description: Filamento não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    put:
+      summary: Atualizar filamento
+      description: Atualiza os dados de um filamento existente
+      tags: [Filamentos]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID do filamento
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FilamentInput'
+      responses:
+        '200':
+          description: Filamento atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Filament'
+        '400':
+          description: Dados inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '404':
+          description: Filamento não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    delete:
+      summary: Excluir filamento
+      description: Remove um filamento do estoque
+      tags: [Filamentos]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID do filamento
+      responses:
+        '200':
+          description: Filamento excluído com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Filamento excluído com sucesso
+        '404':
+          description: Filamento não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /filaments/{id}/quantity:
+    patch:
+      summary: Atualizar quantidade de filamento
+      description: Atualiza apenas a quantidade disponível de um filamento
+      tags: [Filamentos]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID do filamento
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - quantity
+              properties:
+                quantity:
+                  type: number
+                  format: float
+                  description: Nova quantidade em gramas
+                  example: 750
+      responses:
+        '200':
+          description: Quantidade atualizada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Filament'
+        '400':
+          description: Dados inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '404':
+          description: Filamento não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /filaments/stats:
+    get:
+      summary: Estatísticas de filamentos
+      description: Retorna estatísticas sobre o estoque de filamentos
+      tags: [Filamentos]
+      responses:
+        '200':
+          description: Estatísticas de filamentos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalFilaments:
+                    type: integer
+                    description: Total de filamentos cadastrados
+                    example: 25
+                  totalWeight:
+                    type: number
+                    format: float
+                    description: Peso total em gramas
+                    example: 18750
+                  lowStockCount:
+                    type: integer
+                    description: Quantidade de filamentos com estoque baixo
+                    example: 3
+                  materialDistribution:
+                    type: object
+                    description: Distribuição por material
+                    additionalProperties:
+                      type: integer
+                    example:
+                      PLA: 12
+                      ABS: 5
+                      PETG: 8
+                  brandDistribution:
+                    type: object
+                    description: Distribuição por marca
+                    additionalProperties:
+                      type: integer
+                    example:
+                      Creality: 8
+                      Prusa: 10
+                      Polymaker: 7
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /status:
+    get:
+      summary: Status da API
+      description: Verifica se a API está funcionando corretamente
+      tags: [Status]
+      responses:
+        '200':
+          description: API funcionando normalmente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: online
+                  message:
+                    type: string
+                    example: API funcionando normalmente
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: '2023-08-15T14:30:00Z'
+                  version:
+                    type: string
+                    example: '1.0.0'
+
+components:
+  schemas:
+    Filament:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: ID único do filamento
+          example: 60d21b4667d0d8992e610c85
+        brand:
+          type: string
+          description: Marca do filamento
+          example: Creality
+        material:
+          type: string
+          description: Material do filamento
+          example: PLA
+        color:
+          type: string
+          description: Cor do filamento
+          example: Vermelho
+        quantity:
+          type: number
+          format: float
+          description: Quantidade disponível em gramas
+          example: 750
+        initialWeight:
+          type: number
+          format: float
+          description: Peso inicial do carretel em gramas
+          example: 1000
+        spoolWeight:
+          type: number
+          format: float
+          description: Peso do carretel vazio em gramas
+          example: 250
+        diameter:
+          type: number
+          format: float
+          description: Diâmetro do filamento em mm
+          example: 1.75
+        lowStockThreshold:
+          type: number
+          format: float
+          description: Limite para considerar estoque baixo em gramas
+          example: 200
+        notes:
+          type: string
+          description: Observações sobre o filamento
+          example: Bom para peças decorativas
+        createdAt:
+          type: string
+          format: date-time
+          description: Data de criação do registro
+          example: '2023-08-15T14:30:00Z'
+        updatedAt:
+          type: string
+          format: date-time
+          description: Data da última atualização
+          example: '2023-08-15T14:30:00Z'
+    
+    FilamentInput:
+      type: object
+      required:
+        - brand
+        - material
+        - color
+        - quantity
+        - initialWeight
+        - spoolWeight
+      properties:
+        brand:
+          type: string
+          description: Marca do filamento
+          example: Creality
+        material:
+          type: string
+          description: Material do filamento
+          example: PLA
+        color:
+          type: string
+          description: Cor do filamento
+          example: Vermelho
+        quantity:
+          type: number
+          format: float
+          description: Quantidade disponível em gramas
+          example: 750
+        initialWeight:
+          type: number
+          format: float
+          description: Peso inicial do carretel em gramas
+          example: 1000
+        spoolWeight:
+          type: number
+          format: float
+          description: Peso do carretel vazio em gramas
+          example: 250
+        diameter:
+          type: number
+          format: float
+          description: Diâmetro do filamento em mm
+          example: 1.75
+          default: 1.75
+        lowStockThreshold:
+          type: number
+          format: float
+          description: Limite para considerar estoque baixo em gramas
+          example: 200
+          default: 100
+        notes:
+          type: string
+          description: Observações sobre o filamento
+          example: Bom para peças decorativas
+    
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensagem de erro
+          example: Ocorreu um erro ao processar a solicitação
+        error:
+          type: string
+          description: Tipo de erro
+          example: InternalServerError
+        statusCode:
+          type: integer
+          description: Código de status HTTP
+          example: 500
+    
+    ValidationError:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensagem de erro
+          example: Erro de validação
+        errors:
+          type: array
+          description: Lista de erros de validação
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                description: Campo com erro
+                example: quantity
+              message:
+                type: string
+                description: Mensagem de erro para o campo
+                example: Quantidade deve ser um número positivo
+        statusCode:
+          type: integer
+          description: Código de status HTTP
+          example: 400
