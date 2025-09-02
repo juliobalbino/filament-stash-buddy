@@ -1,73 +1,108 @@
-# Welcome to your Lovable project
+# Filament Stash Buddy
 
-## Project info
+## Descrição
 
-**URL**: https://lovable.dev/projects/6d0bdd39-61ba-4692-a34e-60154db12ffb
+O Filament Stash Buddy é uma aplicação web para gerenciamento de estoque de filamentos de impressão 3D. Ele permite que você controle seu inventário de filamentos, registrando informações como marca, material, cor, quantidade e pesos.
 
-## How can I edit this code?
+## Tecnologias Utilizadas
 
-There are several ways of editing your application.
+### Frontend
+- React 18 com TypeScript
+- Vite como bundler
+- Tailwind CSS para estilização
+- shadcn/ui para componentes de interface
+- React Query para gerenciamento de estado e cache
+- Axios para requisições HTTP
+- React Router para navegação
 
-**Use Lovable**
+### Backend
+- Node.js com Express
+- MongoDB com Mongoose
+- Swagger para documentação da API
+- CORS para segurança
+- Helmet para proteção de cabeçalhos HTTP
+- Morgan para logging
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/6d0bdd39-61ba-4692-a34e-60154db12ffb) and start prompting.
+## Funcionalidades
 
-Changes made via Lovable will be committed automatically to this repo.
+- Cadastro e gerenciamento de filamentos
+- Controle de estoque com atualização de quantidade
+- Suporte a diferentes marcas e materiais
+- Cálculo automático de pesos (carretel, filamento, total)
+- Interface responsiva e intuitiva
+- Importação e exportação de dados via CSV
+- Validações de dados e feedback visual
+- Tratamento de erros robusto
 
-**Use your preferred IDE**
+## Requisitos
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- Node.js >= 18.0.0
+- MongoDB
+- Docker (opcional)
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Instalação e Execução
 
-Follow these steps:
+### Usando Docker
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+```bash
+# Clone o repositório
+git clone <URL_DO_REPOSITÓRIO>
+cd filament-stash-buddy
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Configure o arquivo .env do servidor
+cp server/.env.example server/.env
+# Ajuste as variáveis no arquivo server/.env conforme necessário
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Inicie os containers
+docker-compose up --build
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+A aplicação estará disponível em:
+- Frontend: http://localhost
+- API: http://localhost:5000
+
+### Instalação Local
+
+```bash
+# Clone o repositório
+git clone <URL_DO_REPOSITÓRIO>
+cd filament-stash-buddy
+
+# Instale as dependências do frontend
+npm install
+
+# Configure as variáveis de ambiente do frontend
+cp .env.example .env
+
+# Inicie o frontend em modo de desenvolvimento
+npm run dev
+
+# Em outro terminal, configure o backend
+cd server
+
+# Instale as dependências do backend
+npm install
+
+# Configure as variáveis de ambiente do backend
+cp .env.example .env
+
+# Inicie o backend em modo de desenvolvimento
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Documentação
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- A documentação da API está disponível em `/api-docs` quando o servidor está em execução
+- Collection do Postman disponível em `server/docs/filament-stash-buddy.postman_collection.json`
 
-**Use GitHub Codespaces**
+## Contribuição
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
+3. Faça commit das suas alterações (`git commit -am 'Adiciona nova feature'`)
+4. Faça push para a branch (`git push origin feature/nova-feature`)
+5. Abra um Pull Request
 
-## What technologies are used for this project?
+## Licença
 
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/6d0bdd39-61ba-4692-a34e-60154db12ffb) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Este projeto está licenciado sob a licença MIT - veja o arquivo LICENSE para detalhes.
