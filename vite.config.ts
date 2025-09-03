@@ -9,6 +9,9 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
+  preview: {
+    allowedHosts: ["filamentstock.ddns.net"],
+  },
   plugins: [
     react(),
     mode === 'development' &&

@@ -87,7 +87,7 @@ const productionConfig = {
   // Configurações de CORS para produção
   cors: {
     // Origens permitidas em produção
-    origin: process.env.CORS_ORIGIN || 'https://filamentstashbuddy.com',
+    origin: '*',
     // Métodos permitidos
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     // Cabeçalhos permitidos

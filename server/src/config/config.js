@@ -17,7 +17,7 @@ const developmentConfig = {
     },
   },
   cors: {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:8080',
+    origin: '*', // Permite acesso de qualquer origem
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   },

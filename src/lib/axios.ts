@@ -1,7 +1,17 @@
 import axios from 'axios';
 
+// Detecta automaticamente a URL base da API baseada no ambiente
+const getApiBaseUrl = () => {
+  // Se estiver rodando localmente (localhost ou 127.0.0.1)
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return 'http://localhost:5000/api';
+  }
+  // Se estiver rodando no servidor, usa o mesmo domínio mas porta 5000
+  return `http://${window.location.hostname}:5000/api`;
+};
+
 export const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: getApiBaseUrl(),
   headers: {
     'Content-Type': 'application/json'
   }
