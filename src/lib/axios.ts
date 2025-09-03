@@ -6,8 +6,8 @@ const getApiBaseUrl = () => {
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     return 'http://localhost:5000/api';
   }
-  // Se estiver rodando no servidor, usa o mesmo domínio mas porta 5000
-  return `http://${window.location.hostname}:5000/api`;
+  // Se estiver rodando no servidor com Nginx proxy, usa URL relativa
+  return '/api';
 };
 
 export const api = axios.create({
